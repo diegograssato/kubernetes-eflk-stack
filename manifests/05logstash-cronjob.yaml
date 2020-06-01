@@ -1,0 +1,48 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: elasticsearch-curator-kind-logstash-via-filebeat
+  namespace: elastic-logging
+  labels:
+    app: elasticsearch
+spec:
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          name: elasticsearch-curator
+          labels:
+            app: elasticsearch
+        spec:
+          restartPolicy: "Never"
+          containers:
+          - name: ingestor-kind-logstash-via-filebeat
+            image: python:3.6-alpine
+            args: ["sh", "-c", "pip install elasticsearch-curator && curator_cli --host elasticsearch delete_indices --filter_list '[{\"filtertype\":\"age\",\"source\":\"creation_date\",\"direction\":\"older\",\"unit\":\"days\",\"unit_count\":14},{\"filtertype\":\"pattern\",\"kind\":\"prefix\",\"value\":\"logstash-via-elasticsearch\"}]' || true"]
+      backoffLimit: 1
+
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: elasticsearch-curator-kind-logstash-via-filebeat
+  namespace: elastic-logging
+  labels:
+    app: elasticsearch
+spec:
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          name: elasticsearch-curator
+          labels:
+            app: elasticsearch
+        spec:
+          restartPolicy: "Never"
+          containers:
+          - name: ingestor-kind-logstash-via-filebeat
+            image: python:3.6-alpine
+            args: ["sh", "-c", "pip install elasticsearch-curator && curator_cli --host elasticsearch delete_indices --filter_list '[{\"filtertype\":\"age\",\"source\":\"creation_date\",\"direction\":\"older\",\"unit\":\"days\",\"unit_count\":14},{\"filtertype\":\"pattern\",\"kind\":\"prefix\",\"value\":\"fluentd-via-elasticsearch-\"}]' || true"]
+      backoffLimit: 1
