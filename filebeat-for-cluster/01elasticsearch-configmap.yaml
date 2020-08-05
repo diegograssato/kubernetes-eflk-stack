@@ -10,10 +10,7 @@ data:
     bootstrap.memory_lock: false
     discovery.seed_hosts: "es-cluster-0.elasticsearch,es-cluster-1.elasticsearch,es-cluster-2.elasticsearch"
     cluster.initial_master_nodes: "es-cluster-0,es-cluster-1,es-cluster-2"
-    xpack.license.self_generated.type: trial
-    xpack.security.enabled: false
+    xpack.license.self_generated.type: basic
     xpack.monitoring.enabled: true
-    # xpack.ml.enabled: true
-    # xpack.graph.enabled: true
-    # xpack.watcher.enabled: true
-        
+    xpack.security.enabled: true
+    

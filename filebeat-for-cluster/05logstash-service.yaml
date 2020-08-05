@@ -8,7 +8,9 @@ metadata:
     version: "1.0"
     environment: logging
 spec:
-  type: ClusterIP
+  type: LoadBalancer
+  externalIPs:
+    - 172.17.0.3
   selector:
     app: logstash
     version: "1.0"

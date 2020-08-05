@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logstash-configmap
+  namespace: elastic-logging
+  labels:
+    app: logstash
+    version: "1.0"
+    environment: logging
+data:
+  logstash.yml: |-
+    http.host: "0.0.0.0"
+    path.config: /usr/share/logstash/pipeline
+  pipeline.conf: |-
+    input {
+      beats {
+        port => 5044
+      }
+    }
+    filter {
+      # grok {
+      #     match => { "message" => "%{COMBINEDAPACHELOG}" }
+      # }
+      date {
+        match => [ "timestamp" , "dd/MMM/yyyy:HH:mm:ss Z" ]
+      }
+      # geoip {
+      #     source => "clientip"
+      #   }
+    }
+    output {
+      elasticsearch {
+        hosts => ['${ELASTICSEARCH_HOST:elasticsearch}:${ELASTICSEARCH_PORT:9200}']
+        index => "logstash-via-elasticsearch-%{+YYYY.MM.dd}"
+      }
+      stdout { 
+        codec => rubydebug { metadata => true }
+      }
+    }

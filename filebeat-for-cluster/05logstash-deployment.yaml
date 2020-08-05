@@ -1,0 +1,55 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logstash
+  namespace: elastic-logging
+  labels:
+    app: logstash
+    kubernetes.io/cluster-service: "true"
+    addonmanager.kubernetes.io/mode: Reconcile
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logstash
+  template:
+    metadata:
+      labels:
+        app: logstash
+        version: "1.0"
+        environment: logging
+    spec:
+      containers:
+      - name: logstash-container
+        image: docker.elastic.co/logstash/logstash:7.4.1
+        env:
+          - name:  ELASTICSEARCH_HOST
+            value: "elasticsearch"
+          - name:  ELASTICSEARCH_PORT
+            value: "9200"
+        #envFrom:
+        #- secretRef:
+        #    name: kibana-creds            
+        ports:
+        - containerPort: 5044
+        volumeMounts:
+          - name: logstash-settings-config-volume
+            mountPath: /usr/share/logstash/config
+          - name: logstash-pipeline-config-volume
+            mountPath: /usr/share/logstash/pipeline
+      volumes:
+      - name: logstash-settings-config-volume
+        configMap:
+          name: logstash-configmap
+          items:
+            - key: logstash.yml
+              path: logstash.yml
+      - name: logstash-pipeline-config-volume
+        configMap:
+          name: logstash-configmap
+          items:
+            - key: pipeline.conf
+              path: pipeline.conf
+ 
+ 

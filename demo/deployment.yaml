@@ -45,6 +45,6 @@ spec:
     app: demo
   type: LoadBalancer
   externalIPs:
-    - 172.17.0.3
+    - 192.168.39.226
 status:
   loadBalancer: {}
